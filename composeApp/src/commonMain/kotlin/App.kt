@@ -28,49 +28,61 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 import composedemo.composeapp.generated.resources.Res
 import composedemo.composeapp.generated.resources.compose_multiplatform
+import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
 @Preview
 fun App() {
+
+    fun todaysDate(): String {
+        fun LocalDateTime.format() = toString().substringBefore('T')
+
+        val now = Clock.System.now()
+        val zone = TimeZone.currentSystemDefault()
+        return now.toLocalDateTime(zone).format()
+    }
+
     MaterialTheme {
         var showContent by remember { mutableStateOf(false) }
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    navigationIcon = {
-                        IconButton(onClick = {}) {
-                            Icon(imageVector = Icons.Rounded.Menu, contentDescription = "Menu")
-                        }
-                    },
-                    title = {
-                        Text("Compose Demo - KMM")
-                    }, actions = {
-                        IconButton(onClick = {}) {
-                            Icon(imageVector = Icons.Rounded.MoreVert, contentDescription = "More")
-                        }
-                    })
-            }
-        ) {
+        Scaffold(topBar = {
+            TopAppBar(navigationIcon = {
+                IconButton(onClick = {}) {
+                    Icon(imageVector = Icons.Rounded.Menu, contentDescription = "Menu")
+                }
+            }, title = {
+                Text("Compose Demo - KMP")
+            }, actions = {
+                IconButton(onClick = {}) {
+                    Icon(imageVector = Icons.Rounded.MoreVert, contentDescription = "More")
+                }
+            })
+        }) {
             Column(
                 Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
+                verticalArrangement = Arrangement.SpaceBetween,
             ) {
-
-
-                AnimatedVisibility(showContent) {
-                    val greeting = remember { Greeting().greet() }
-                    Column(
-                        Modifier.fillMaxWidth().padding(16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        Image(painterResource(Res.drawable.compose_multiplatform), null)
-                        Text("Compose: $greeting")
+                Text(text = "Today's Date: ${todaysDate()}")
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    AnimatedVisibility(showContent) {
+                        val greeting = remember { Greeting().greet() }
+                        Column(
+                            Modifier.fillMaxWidth().padding(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                        ) {
+                            Image(painterResource(Res.drawable.compose_multiplatform), null)
+                            Text("Compose: $greeting")
+                        }
                     }
-                }
-                Button(onClick = { showContent = !showContent }) {
-                    Text(if (showContent) "Hide Logo" else "Show Logo")
+
+                    Button(modifier = Modifier.padding(16.dp),
+                        onClick = { showContent = !showContent }) {
+                        Text(if (showContent) "Hide Logo" else "Show Logo")
+                    }
                 }
             }
         }
